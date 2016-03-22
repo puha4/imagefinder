@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Image Finder</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+
+    <!--http://farm{farm-id}.staticflickr.com/{server-id}/{id}_{secret}.jpg-->
+    <string name="image_url">"http://farm%1$s.staticflickr.com/%2$s/%3$s_%4$s.jpg"</string>
+</resources>
