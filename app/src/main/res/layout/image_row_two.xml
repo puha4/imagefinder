@@ -12,7 +12,7 @@
         android:scaleType="matrix"
         android:layout_margin="1dp"
         android:layout_weight="1"
-        android:background="@color/primary_dark" />
+        android:background="@color/blue_gray" />
 
     <ImageView
         android:id="@+id/thumb2"
@@ -21,6 +21,6 @@
         android:layout_margin="1dp"
         android:layout_weight="1"
         android:scaleType="matrix"
-        android:background="@color/primary_dark" />
+        android:background="@color/blue_gray" />
 
 </LinearLayout>

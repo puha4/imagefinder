@@ -6,4 +6,9 @@
 
     <!--http://farm{farm-id}.staticflickr.com/{server-id}/{id}_{secret}.jpg-->
     <string name="image_url">"http://farm%1$s.staticflickr.com/%2$s/%3$s_%4$s.jpg"</string>
+    <string name="title_activity_search">Search</string>
+    <string name="search_hint">Search the records</string>
+    <string name="search_text">Enter text</string>
+    <string name="search_add">Add</string>
+    <string name="search_no_records">There are no records in the table</string>
 </resources>

@@ -16,7 +16,7 @@ import com.imagefinder.app.io.RestClient;
 import com.imagefinder.app.model.FlickrPhotos;
 import com.imagefinder.app.model.Photo;
 import com.imagefinder.app.ui.fragment.GoogleMapFragment;
-import com.imagefinder.app.ui.util.ImageUtil;
+import com.imagefinder.app.util.ImageUtil;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
 import retrofit.Call;
@@ -105,6 +105,11 @@ public class HomeActivity extends AppCompatActivity {
                 }
             });
         }
+    }
+
+    public void onStartSearch(View view) {
+        Intent intent = new Intent(this, SearchActivity.class);
+        startActivity(intent);
     }
 
     public void onAuth(View view) {
