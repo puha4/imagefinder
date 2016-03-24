@@ -40,6 +40,8 @@ public class HomeActivity extends AppCompatActivity {
 
     private static final String API_KEY = "5f45c46eaf6e87b55c9f36fec03e3466";
     private static final String API_SECRET = "6e732ab8487b05e4";
+    private static final String AUTH_ACTION = "auth";
+    private static final String GET_TOKEN_ACTION = "gettoken";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -54,6 +56,7 @@ public class HomeActivity extends AppCompatActivity {
         if (uri != null) {
             frob = uri.getQueryParameter("frob");
             Log.i(TAG, frob);
+            sendRequestForAuthToken();
         }
     }
 
@@ -66,7 +69,7 @@ public class HomeActivity extends AppCompatActivity {
         }
     }
 
-    public void sendRequest() {
+    public void sendRequestForImageByGeo() {
         this.latitude = googleMapFragment.getLatitude();
         this.longitude = googleMapFragment.getLongitude();
 
@@ -88,10 +91,11 @@ public class HomeActivity extends AppCompatActivity {
                 Toast.makeText(HomeActivity.this, t.getLocalizedMessage(), Toast.LENGTH_LONG).show();
             }
         });
+    }
 
+    public void sendRequestForAuthToken() {
         if (frob != null) {
-            String apS = new String(Hex.encodeHex(DigestUtils.md5(API_SECRET+"api_key"+API_KEY+"formatjsonfrob"+frob+"methodflickr.auth.getTokennojsoncallback1")));
-            Call<String> getToken = RestClient.build().getToken(API_KEY, frob, apS);
+            Call<String> getToken = RestClient.build().getToken(API_KEY, frob, getApiSig(GET_TOKEN_ACTION));
 
             getToken.enqueue(new Callback<String>() {
                 @Override
@@ -113,13 +117,19 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     public void onAuth(View view) {
-        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.flickr.com/services/auth/?api_key="+ API_KEY +"&perms=write&api_sig=" + getApiSig())));
+        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.flickr.com/services/auth/?api_key="+ API_KEY +"&perms=write&api_sig=" + getApiSig(AUTH_ACTION))));
     }
 
-    private String getApiSig() {
-        String url = API_SECRET+"api_key"+API_KEY+"permswrite";
+    private String getApiSig(String requestType) {
+        String apiSig = "";
 
-        return new String(Hex.encodeHex(DigestUtils.md5(url)));
+        if(requestType.equals(GET_TOKEN_ACTION)) {
+            apiSig = new String(Hex.encodeHex(DigestUtils.md5(API_SECRET+"api_key"+API_KEY+"formatjsonfrob"+frob+"methodflickr.auth.getTokennojsoncallback1")));
+        } else if (requestType.equals(AUTH_ACTION)) {
+            apiSig = new String(Hex.encodeHex(DigestUtils.md5(API_SECRET+"api_key"+API_KEY+"permswrite")));
+        }
+
+        return apiSig;
     }
 
     @Override

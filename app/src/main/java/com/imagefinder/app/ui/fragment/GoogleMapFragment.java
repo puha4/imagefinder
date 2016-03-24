@@ -141,7 +141,7 @@ public class GoogleMapFragment extends Fragment implements
         this.latitude = mCurrentLocation.getLatitude();
         this.longitude = mCurrentLocation.getLongitude();
 
-        ((HomeActivity) getActivity()).sendRequest();
+        ((HomeActivity) getActivity()).sendRequestForImageByGeo();
 
         LatLng currentLatLng = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
         options.position(currentLatLng);

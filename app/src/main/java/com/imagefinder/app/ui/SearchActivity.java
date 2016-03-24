@@ -3,28 +3,72 @@ package com.imagefinder.app.ui;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.provider.SearchRecentSuggestions;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.SearchView;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.SimpleCursorAdapter;
 import com.imagefinder.app.R;
+import com.imagefinder.app.db.RecordsDbHelper;
+import com.imagefinder.app.util.SuggestionProvider;
 
 public class SearchActivity extends AppCompatActivity {
 
     private static final String TAG = "SearchActivity";
+    private RecordsDbHelper mDbHelper;
+
+    private ListView listView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
 
+        listView = (ListView) findViewById(R.id.list);
+
+        //Создаем экземпляр БД
+        mDbHelper = new RecordsDbHelper(this);
+        //Открываем БД для записи
+        mDbHelper.open();
+
         Intent intent = getIntent();
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             String query = intent.getStringExtra(SearchManager.QUERY);
+            saveTask(query);
+
+            //Создаем экземпляр SearchRecentSuggestions
+            SearchRecentSuggestions suggestions = new SearchRecentSuggestions(this,
+                    SuggestionProvider.AUTHORITY, SuggestionProvider.MODE);
+            //Сохраняем запрос
+            suggestions.saveRecentQuery(query, null);
+
             Log.i(TAG, query);
+
+            showResults(query);
         }
+    }
+
+    private void showResults(String query) {
+        //Ищем совпадения
+        Cursor cursor = mDbHelper.fetchRecordsByQuery(query);
+        startManagingCursor(cursor);
+        String[] from = new String[] { RecordsDbHelper.KEY_DATA };
+        int[] to = new int[] { R.id.textItem };
+
+        SimpleCursorAdapter records = new SimpleCursorAdapter(this,
+                R.layout.list_item, cursor, from, to);
+        //Обновляем адаптер
+        listView.setAdapter(records);
+    }
+
+    private void saveTask(String data) {
+        mDbHelper.createRecord(data);
     }
 
     @Override
@@ -55,6 +99,7 @@ public class SearchActivity extends AppCompatActivity {
         }
 
         if(id == R.id.menu_search) {
+//            onSearchRequested()
             Log.i(TAG, "selected");
         }
 
