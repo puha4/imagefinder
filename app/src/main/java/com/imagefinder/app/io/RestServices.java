@@ -14,9 +14,15 @@ public interface RestServices {
     );
 
     @GET("?method=flickr.photos.search&format=json&nojsoncallback=1")
-    Call<FlickrPhotos> getPhotos(
+    Call<FlickrPhotos> getPhotosByGeo(
             @Query("api_key") String apiKey,
             @Query("lat") double latitude,
             @Query("lon") double longitude
+    );
+
+    @GET("?method=flickr.photos.search&format=json&nojsoncallback=1")
+    Call<FlickrPhotos> searchPhotos(
+            @Query("api_key") String apiKey,
+            @Query("text") String searchKey
     );
 }

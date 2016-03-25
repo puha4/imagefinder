@@ -73,7 +73,7 @@ public class HomeActivity extends AppCompatActivity {
         this.latitude = googleMapFragment.getLatitude();
         this.longitude = googleMapFragment.getLongitude();
 
-        Call<FlickrPhotos> imageList = RestClient.build().getPhotos(API_KEY, latitude, longitude);
+        Call<FlickrPhotos> imageList = RestClient.build().getPhotosByGeo(API_KEY, latitude, longitude);
 
         imageList.enqueue(new Callback<FlickrPhotos>() {
             @Override
@@ -82,8 +82,8 @@ public class HomeActivity extends AppCompatActivity {
                 Collections.shuffle(photos);
 
                 ImageUtil.loadTwoImages(findViewById(R.id.first_row), HomeActivity.this, response.body().photos.photo.subList(0, 2));
-                ImageUtil.loadThreeImages(findViewById(R.id.second_row), HomeActivity.this, response.body().photos.photo.subList(2,5));
-                ImageUtil.loadImages(findViewById(R.id.third_row), HomeActivity.this, response.body().photos.photo.subList(5,9));
+                ImageUtil.loadThreeImages(findViewById(R.id.second_row), HomeActivity.this, response.body().photos.photo.subList(2, 5));
+                ImageUtil.loadImages(findViewById(R.id.third_row), HomeActivity.this, response.body().photos.photo.subList(5, 9));
             }
 
             @Override
@@ -117,16 +117,16 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     public void onAuth(View view) {
-        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.flickr.com/services/auth/?api_key="+ API_KEY +"&perms=write&api_sig=" + getApiSig(AUTH_ACTION))));
+        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.flickr.com/services/auth/?api_key=" + API_KEY + "&perms=write&api_sig=" + getApiSig(AUTH_ACTION))));
     }
 
     private String getApiSig(String requestType) {
         String apiSig = "";
 
-        if(requestType.equals(GET_TOKEN_ACTION)) {
-            apiSig = new String(Hex.encodeHex(DigestUtils.md5(API_SECRET+"api_key"+API_KEY+"formatjsonfrob"+frob+"methodflickr.auth.getTokennojsoncallback1")));
+        if (requestType.equals(GET_TOKEN_ACTION)) {
+            apiSig = new String(Hex.encodeHex(DigestUtils.md5(API_SECRET + "api_key" + API_KEY + "formatjsonfrob" + frob + "methodflickr.auth.getTokennojsoncallback1")));
         } else if (requestType.equals(AUTH_ACTION)) {
-            apiSig = new String(Hex.encodeHex(DigestUtils.md5(API_SECRET+"api_key"+API_KEY+"permswrite")));
+            apiSig = new String(Hex.encodeHex(DigestUtils.md5(API_SECRET + "api_key" + API_KEY + "permswrite")));
         }
 
         return apiSig;

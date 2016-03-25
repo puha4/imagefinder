@@ -2,6 +2,7 @@
       xmlns:app="http://schemas.android.com/apk/res-auto"
       xmlns:tools="http://schemas.android.com/tools"
       tools:context="com.imagefinder.app.ui.SearchActivity">
+
     <item android:id="@+id/action_settings"
           android:title="@string/action_settings"
           android:orderInCategory="100"
@@ -9,9 +10,8 @@
 
     <item
             android:id="@+id/menu_search"
-            android:title="Buscar"
-            android:icon="@drawable/abc_ic_go_search_api_mtrl_alpha"
-            app:showAsAction="collapseActionView|ifRoom"
-            android:actionViewClass="android.widget.SearchView"
-            app:actionViewClass="android.widget.SearchView"/>
+            android:title="Search"
+            android:icon="@drawable/ic_action_name"
+            app:showAsAction="ifRoom|collapseActionView"
+            app:actionViewClass="android.support.v7.widget.SearchView"/>
 </menu>

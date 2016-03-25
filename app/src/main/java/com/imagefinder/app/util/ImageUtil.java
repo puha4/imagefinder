@@ -44,4 +44,12 @@ public class ImageUtil {
                 .getString(R.string.image_url, photo.farm, photo.server, photo.id, photo.secret);
     }
 
+    public static void displayImage(Context context, Photo photo, ImageView view) {
+        Picasso.with(context)
+                .load(getFormattedImageString(context, photo))
+                .fit()
+                .centerCrop()
+                .into(view);
+    }
+
 }
