@@ -28,6 +28,7 @@ public class SearchActivity extends AppCompatActivity {
 
     private static final String TAG = "SearchActivity";
     private static final String API_KEY = "5f45c46eaf6e87b55c9f36fec03e3466";
+    private static final String DEFAULT_SEARCH_QUERY = "cat";
     private ListView listView;
 
     @Override
@@ -52,6 +53,8 @@ public class SearchActivity extends AppCompatActivity {
             getSupportActionBar().setSubtitle("results by \"" + query + "\"");
 
             searchPhotos(query);
+        } else {
+            searchPhotos(DEFAULT_SEARCH_QUERY);
         }
     }
 
