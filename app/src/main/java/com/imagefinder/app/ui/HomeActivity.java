@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.Toast;
 import com.imagefinder.app.R;
 import com.imagefinder.app.io.RestClient;
+import com.imagefinder.app.model.AuthUser;
 import com.imagefinder.app.model.FlickrPhotos;
 import com.imagefinder.app.model.Photo;
 import com.imagefinder.app.ui.fragment.GoogleMapFragment;
@@ -38,6 +39,8 @@ public class HomeActivity extends AppCompatActivity {
     private double longitude;
     private String frob;
 
+    private AuthUser user;
+
     private static final String API_KEY = "5f45c46eaf6e87b55c9f36fec03e3466";
     private static final String API_SECRET = "6e732ab8487b05e4";
     private static final String AUTH_ACTION = "auth";
@@ -58,6 +61,23 @@ public class HomeActivity extends AppCompatActivity {
             Log.i(TAG, frob);
             sendRequestForAuthToken();
         }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        if(user != null) {
+//            outState.putParcelable("user", user.auth.user.fullname);
+        }
+    }
+
+    private void setActionBarSubtitle() {
+        getSupportActionBar().setSubtitle("Hello " + user.auth.user.fullname + "!");
+    }
+
+    private void setActionBarSubtitleString(String fullname) {
+        getSupportActionBar().setSubtitle("Hello " + fullname + "!");
     }
 
     private void attachMapFragment(Bundle savedInstanceState) {
@@ -95,12 +115,13 @@ public class HomeActivity extends AppCompatActivity {
 
     public void sendRequestForAuthToken() {
         if (frob != null) {
-            Call<String> getToken = RestClient.build().getToken(API_KEY, frob, getApiSig(GET_TOKEN_ACTION));
+            Call<AuthUser> getToken = RestClient.build().getToken(API_KEY, frob, getApiSig(GET_TOKEN_ACTION));
 
-            getToken.enqueue(new Callback<String>() {
+            getToken.enqueue(new Callback<AuthUser>() {
                 @Override
-                public void onResponse(Response<String> response, Retrofit retrofit) {
-
+                public void onResponse(Response<AuthUser> response, Retrofit retrofit) {
+                    user =  response.body();
+                    setActionBarSubtitle();
                 }
 
                 @Override
