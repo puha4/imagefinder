@@ -17,6 +17,7 @@ import com.imagefinder.app.model.AuthUser;
 import com.imagefinder.app.model.FlickrPhotos;
 import com.imagefinder.app.model.Photo;
 import com.imagefinder.app.ui.fragment.GoogleMapFragment;
+import com.imagefinder.app.user.User;
 import com.imagefinder.app.util.ImageUtil;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -64,20 +65,15 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        if(user != null) {
-//            outState.putParcelable("user", user.auth.user.fullname);
-        }
+    protected void onStart() {
+        super.onStart();
+        setActionBarSubtitle();
     }
 
     private void setActionBarSubtitle() {
-        getSupportActionBar().setSubtitle("Hello " + user.auth.user.fullname + "!");
-    }
-
-    private void setActionBarSubtitleString(String fullname) {
-        getSupportActionBar().setSubtitle("Hello " + fullname + "!");
+        if(User.getInstance().getFullname() != null) {
+            getSupportActionBar().setSubtitle("Hello " + User.getInstance().getFullname() + "!");
+        }
     }
 
     private void attachMapFragment(Bundle savedInstanceState) {
@@ -121,6 +117,12 @@ public class HomeActivity extends AppCompatActivity {
                 @Override
                 public void onResponse(Response<AuthUser> response, Retrofit retrofit) {
                     user =  response.body();
+
+                    User.getInstance().setUsername(user.auth.user.username);
+                    User.getInstance().setFullname(user.auth.user.fullname);
+                    User.getInstance().setToken(user.auth.token._content);
+                    User.getInstance().setNsid(user.auth.user.nsid);
+
                     setActionBarSubtitle();
                 }
 
