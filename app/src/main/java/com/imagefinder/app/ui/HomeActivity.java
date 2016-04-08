@@ -1,8 +1,11 @@
 package com.imagefinder.app.ui;
 
+import android.app.SearchManager;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.speech.RecognizerIntent;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
@@ -10,7 +13,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.Toast;
+
 import com.imagefinder.app.R;
 import com.imagefinder.app.io.RestClient;
 import com.imagefinder.app.model.AuthUser;
@@ -19,19 +24,25 @@ import com.imagefinder.app.model.Photo;
 import com.imagefinder.app.ui.fragment.GoogleMapFragment;
 import com.imagefinder.app.user.User;
 import com.imagefinder.app.util.ImageUtil;
+
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
+
 import retrofit.Call;
 import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 public class HomeActivity extends AppCompatActivity {
 
     private static final String TAG = "HomeActivity";
+
+    private final int REQ_CODE_SPEECH = 100;
 
     private GoogleMapFragment googleMapFragment;
     private FragmentManager manager;
@@ -55,12 +66,53 @@ public class HomeActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_home);
 
+        ImageButton micButton = (ImageButton) findViewById(R.id.micBtn);
+
+        micButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                promptSpeechInput();
+            }
+        });
+
         Uri uri = getIntent().getData();
 
         if (uri != null) {
             frob = uri.getQueryParameter("frob");
             Log.i(TAG, frob);
             sendRequestForAuthToken();
+        }
+    }
+
+    private void promptSpeechInput() {
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
+        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, getString(R.string.say_smth));
+
+        try {
+            startActivityForResult(intent, REQ_CODE_SPEECH);
+        } catch (ActivityNotFoundException a) {
+            Toast.makeText(this, R.string.doesnt_support, Toast.LENGTH_LONG).show();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        switch (requestCode) {
+            case REQ_CODE_SPEECH:
+                if (resultCode == RESULT_OK && data != null) {
+                    ArrayList<String> result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+                    if (result.get(0) != null) {
+                        onStartSearch(result.get(0));
+                    }
+                    for (String res : result) {
+                        Log.i(TAG, res);
+                    }
+                }
+                break;
         }
     }
 
@@ -71,7 +123,7 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void setActionBarSubtitle() {
-        if(User.getInstance().getFullname() != null) {
+        if (User.getInstance().getFullname() != null) {
             getSupportActionBar().setSubtitle("Hello " + User.getInstance().getFullname() + "!");
         }
     }
@@ -116,7 +168,7 @@ public class HomeActivity extends AppCompatActivity {
             getToken.enqueue(new Callback<AuthUser>() {
                 @Override
                 public void onResponse(Response<AuthUser> response, Retrofit retrofit) {
-                    user =  response.body();
+                    user = response.body();
 
                     User.getInstance().setUsername(user.auth.user.username);
                     User.getInstance().setFullname(user.auth.user.fullname);
@@ -136,6 +188,12 @@ public class HomeActivity extends AppCompatActivity {
 
     public void onStartSearch(View view) {
         Intent intent = new Intent(this, SearchActivity.class);
+        startActivity(intent);
+    }
+
+    public void onStartSearch(String seachQuery) {
+        Intent intent = new Intent(this, SearchActivity.class);
+        intent.putExtra(SearchManager.QUERY, seachQuery);
         startActivity(intent);
     }
 
@@ -170,9 +228,9 @@ public class HomeActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
+//        if (id == R.id.action_settings) {
+//            return true;
+//        }
 
         return super.onOptionsItemSelected(item);
     }

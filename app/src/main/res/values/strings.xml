@@ -11,4 +11,6 @@
     <string name="search_text">Enter text</string>
     <string name="search_add">Add</string>
     <string name="search_no_records">There are no records in the table</string>
+    <string name="say_smth">Say something...</string>
+    <string name="doesnt_support">Sorry! Your device doesn\\\'t support speech input</string>
 </resources>

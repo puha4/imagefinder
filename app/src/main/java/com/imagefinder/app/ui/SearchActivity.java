@@ -42,7 +42,7 @@ public class SearchActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
 
-        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+        if (Intent.ACTION_SEARCH.equals(intent.getAction()) || intent.getStringExtra(SearchManager.QUERY) != null) {
             String query = intent.getStringExtra(SearchManager.QUERY);
 
             SearchRecentSuggestions suggestions = new SearchRecentSuggestions(this,
@@ -104,9 +104,9 @@ public class SearchActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
+//        if (id == R.id.action_settings) {
+//            return true;
+//        }
 
         if (id == R.id.menu_search) {
             Log.i(TAG, "selected");
